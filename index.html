@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced QR Code Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/qr-code-styling@1.6.0/lib/qr-code-styling.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        #qrcode {
+            width: 100%;
+            height: 100%;
+            min-height: 256px;
+        }
+        /* Custom styles for input elements for a consistent look */
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #374151; /* gray-700 */
+            border: 1px solid #4B5563; /* gray-600 */
+            border-radius: 0.5rem; /* rounded-lg */
+            color: white;
+            transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #4f46e5; /* focus:ring-indigo-500 */
+        }
+        .form-label {
+            display: block;
+            font-weight: 500;
+            color: #D1D5DB; /* gray-300 */
+            margin-bottom: 0.5rem;
+        }
+        .color-picker-wrapper {
+            position: relative;
+            width: 100%;
+            height: 2.75rem; /* h-11 */
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid #4B5563;
+        }
+        .color-picker-wrapper input[type="color"] {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: calc(100% + 20px);
+            height: calc(100% + 20px);
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-slate-900">
+
+    <div class="container mx-auto p-4 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        
+        <!-- Controls Column -->
+        <div class="lg:col-span-2 bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-8 space-y-6">
+            <div class="text-center lg:text-left">
+                <h1 class="text-3xl font-bold text-white">Advanced QR Code Generator</h1>
+                <p class="text-slate-400 mt-2">Customize your QR code with logos, colors, and styles.</p>
+            </div>
+
+            <!-- URL Input -->
+            <div>
+                <label for="url-input" class="form-label">Website URL</label>
+                <input type="text" id="url-input" value="https://rajveer-v2.vercel.app/" class="form-input">
+            </div>
+
+            <!-- Styling Sections -->
+            <div class="space-y-6">
+                <!-- Logo/Image Section -->
+                <details class="bg-slate-700/50 rounded-lg p-4" open>
+                    <summary class="font-semibold text-white cursor-pointer">Logo & Image</summary>
+                    <div class="mt-4 space-y-4">
+                        <div>
+                            <label for="logo-input" class="form-label">Upload Logo (optional)</label>
+                            <input type="file" id="logo-input" accept="image/png, image/jpeg, image/svg+xml" class="block w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"/>
+                        </div>
+                        <div>
+                            <label for="image-size" class="form-label">Logo Size</label>
+                            <input type="range" id="image-size" min="0.1" max="0.5" step="0.05" value="0.3" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Design & Colors Section -->
+                <details class="bg-slate-700/50 rounded-lg p-4" open>
+                    <summary class="font-semibold text-white cursor-pointer">Design & Colors</summary>
+                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Dot Style -->
+                        <div>
+                            <label for="dot-style" class="form-label">Dot Style</label>
+                            <select id="dot-style" class="form-select">
+                                <option value="square">Square</option>
+                                <option value="dots">Dots</option>
+                                <option value="rounded">Rounded</option>
+                                <option value="extra-rounded">Extra Rounded</option>
+                                <option value="classy">Classy</option>
+                                <option value="classy-rounded">Classy Rounded</option>
+                            </select>
+                        </div>
+                        <!-- Corner Square Style -->
+                        <div>
+                            <label for="corner-square-style" class="form-label">Corner Square Style</label>
+                            <select id="corner-square-style" class="form-select">
+                                <option value="square">Square</option>
+                                <option value="dot">Dot</option>
+                                <option value="extra-rounded">Extra Rounded</option>
+                            </select>
+                        </div>
+                        <!-- Dot Color -->
+                         <div>
+                            <label class="form-label">Dot Color</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="dot-color" value="#4f46e5">
+                            </div>
+                        </div>
+                        <!-- Background Color -->
+                        <div>
+                            <label class="form-label">Background Color</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" id="bg-color" value="#ffffff">
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- Preview & Download Column -->
+        <div class="bg-slate-800 rounded-2xl shadow-2xl p-6 md:p-8 sticky top-8">
+            <h2 class="text-xl font-bold text-white text-center mb-4">Preview</h2>
+            <div id="qrcode-container" class="bg-white p-4 rounded-lg aspect-square flex items-center justify-center">
+                <div id="qrcode"></div>
+            </div>
+            <div class="mt-6 space-y-3">
+                <select id="download-format" class="form-select">
+                    <option value="png">PNG</option>
+                    <option value="svg">SVG</option>
+                    <option value="jpeg">JPEG</option>
+                </select>
+                <button id="download-btn" class="w-full p-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-green-500 transition-transform transform hover:scale-105">
+                    Download
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element References ---
+            const urlInput = document.getElementById('url-input');
+            const logoInput = document.getElementById('logo-input');
+            const imageSizeInput = document.getElementById('image-size');
+            const dotStyleSelect = document.getElementById('dot-style');
+            const cornerSquareStyleSelect = document.getElementById('corner-square-style');
+            const dotColorInput = document.getElementById('dot-color');
+            const bgColorInput = document.getElementById('bg-color');
+            const downloadBtn = document.getElementById('download-btn');
+            const downloadFormatSelect = document.getElementById('download-format');
+            const qrCodeContainer = document.getElementById('qrcode');
+
+            let logoImage = null;
+
+            // --- QR Code Styling Instance ---
+            const qrCode = new QRCodeStyling({
+                width: 300,
+                height: 300,
+                type: 'svg', // Use SVG for better scaling and performance
+                data: urlInput.value,
+                image: '',
+                dotsOptions: {
+                    color: dotColorInput.value,
+                    type: dotStyleSelect.value
+                },
+                backgroundOptions: {
+                    color: bgColorInput.value,
+                },
+                cornersSquareOptions: {
+                    type: cornerSquareStyleSelect.value,
+                },
+                imageOptions: {
+                    crossOrigin: "anonymous",
+                    margin: 10,
+                    imageSize: 0.3
+                }
+            });
+
+            // Append the QR code to the container
+            qrCode.append(qrCodeContainer);
+
+            // --- Function to Update QR Code ---
+            const updateQRCode = () => {
+                const options = {
+                    data: urlInput.value.trim(),
+                    image: logoImage || '',
+                    dotsOptions: {
+                        color: dotColorInput.value,
+                        type: dotStyleSelect.value
+                    },
+                    backgroundOptions: {
+                        color: bgColorInput.value,
+                    },
+                    cornersSquareOptions: {
+                        type: cornerSquareStyleSelect.value,
+                    },
+                    imageOptions: {
+                        crossOrigin: "anonymous",
+                        margin: 10,
+                        imageSize: parseFloat(imageSizeInput.value)
+                    }
+                };
+                qrCode.update(options);
+            };
+            
+            // --- Debounce function to limit rapid updates ---
+            let debounceTimer;
+            const debouncedUpdate = () => {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updateQRCode, 200);
+            };
+
+            // --- Event Listeners ---
+            urlInput.addEventListener('input', debouncedUpdate);
+            dotStyleSelect.addEventListener('change', updateQRCode);
+            cornerSquareStyleSelect.addEventListener('change', updateQRCode);
+            dotColorInput.addEventListener('input', debouncedUpdate);
+            bgColorInput.addEventListener('input', debouncedUpdate);
+            imageSizeInput.addEventListener('input', debouncedUpdate);
+
+            // Handle logo file upload
+            logoInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        logoImage = reader.result;
+                        updateQRCode();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    logoImage = null;
+                    updateQRCode();
+                }
+            });
+
+            // Handle download
+            downloadBtn.addEventListener('click', () => {
+                const extension = downloadFormatSelect.value;
+                qrCode.download({ name: 'qr-code', extension });
+            });
+            
+            // Initial render
+            updateQRCode();
+        });
+    </script>
+</body>
+</html>
